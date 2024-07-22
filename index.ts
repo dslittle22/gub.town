@@ -2,7 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import setupDb from "./db/setupDb.js";
 import seedDb from "./db/seedData.js";
-import { BookEntry, Query } from "./types.js";
+import { Book, BookEntry, Query, User } from "./types.js";
 
 const typeDefs = `#graphql
   # This "Book" type defines the queryable fields for every book in our data source.
@@ -48,21 +48,21 @@ const resolvers = {
     books: () => db.prepare("SELECT * FROM books").all(),
     users: () => db.prepare("SELECT * FROM users").all(),
     bookEntries: () => {
-      const bookEntries: Query<BookEntry>[] = db
+      const bookEntries = db
         .prepare("SELECT * FROM book_entries")
         .all() as any as Query<BookEntry>[];
 
-      const result: any[] = [];
+      const result: (BookEntry & { book: Book; user: User })[] = [];
       for (const bookEntry of bookEntries) {
         const book = db
           .prepare("SELECT * FROM books WHERE id = ?")
-          .get(bookEntry.bookId);
+          .get(bookEntry.bookId) as any as Book;
         const user = db
           .prepare("SELECT * FROM users WHERE id = ?")
-          .get(bookEntry.userId);
+          .get(bookEntry.userId) as any as User;
         result.push({ ...bookEntry, book, user });
       }
-      console.log(result);
+
       return result;
     },
   },
