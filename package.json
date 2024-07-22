@@ -1,0 +1,28 @@
+{
+  "name": "minimal-graphql-apollo-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --watch ./index.ts",
+    "start": "tsx ./index.ts",
+
+
+    "tsc:compile": "tsc",
+    "tsc:start": "npm run compile && node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^20.14.4",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.10.4",
+    "@types/better-sqlite3": "^7.6.10",
+    "better-sqlite3": "^11.0.0",
+    "graphql": "^16.8.2",
+    "tsx": "^4.15.6"
+  }
+}
