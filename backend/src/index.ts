@@ -3,6 +3,7 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import setupDb from "./db/setupDb.js";
 import seedDb from "./db/seedData.js";
 import { Book, BookEntry, Query, User } from "./types.js";
+import { randomInt } from "crypto";
 
 const typeDefs = `#graphql
   # This "Book" type defines the queryable fields for every book in our data source.
@@ -50,7 +51,7 @@ seedDb(db);
 
 const resolvers = {
   Query: {
-    foo: () => [{ foo: "bar" }],
+    foo: () => [{ foo: randomInt(0, 100).toString() }],
     books: () => db.prepare("SELECT * FROM books").all(),
     users: () => db.prepare("SELECT * FROM users").all(),
     // bookEntries: () => {
