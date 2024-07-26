@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx --watch ./index.ts",
-    "start": "tsx ./index.ts",
-
-
+    "dev": "tsx --watch ./src/index.ts",
+    "start": "tsx ./src/index.ts",
     "tsc:compile": "tsc",
     "tsc:start": "npm run compile && node ./dist/index.js"
   },

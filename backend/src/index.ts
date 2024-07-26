@@ -29,10 +29,15 @@ const typeDefs = `#graphql
     user: User!
   }
 
+  type Foo {
+    foo: String!
+  }
+
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
+    foo: [Foo]!
     books: [Book]!
     users: [User]!
     bookEntries: [BookEntry]
@@ -45,26 +50,27 @@ seedDb(db);
 
 const resolvers = {
   Query: {
+    foo: () => [{ foo: "bar" }],
     books: () => db.prepare("SELECT * FROM books").all(),
     users: () => db.prepare("SELECT * FROM users").all(),
-    bookEntries: () => {
-      const bookEntries = db
-        .prepare("SELECT * FROM book_entries")
-        .all() as any as Query<BookEntry>[];
+    // bookEntries: () => {
+    //   const bookEntries = db
+    //     .prepare("SELECT * FROM book_entries")
+    //     .all() as any as Query<BookEntry>[];
 
-      const result: (BookEntry & { book: Book; user: User })[] = [];
-      for (const bookEntry of bookEntries) {
-        const book = db
-          .prepare("SELECT * FROM books WHERE id = ?")
-          .get(bookEntry.bookId) as any as Book;
-        const user = db
-          .prepare("SELECT * FROM users WHERE id = ?")
-          .get(bookEntry.userId) as any as User;
-        result.push({ ...bookEntry, book, user });
-      }
+    //   const result: (BookEntry & { book: Book; user: User })[] = [];
+    //   for (const bookEntry of bookEntries) {
+    //     const book = db
+    //       .prepare("SELECT * FROM books WHERE id = ?")
+    //       .get(bookEntry.bookId) as any as Book;
+    //     const user = db
+    //       .prepare("SELECT * FROM users WHERE id = ?")
+    //       .get(bookEntry.userId) as any as User;
+    //     result.push({ ...bookEntry, book, user });
+    //   }
 
-      return result;
-    },
+    //   return result;
+    // },
   },
 };
 
