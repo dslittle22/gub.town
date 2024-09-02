@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS items (
-    item_id INTEGER AUTOINCREMENT PRIMARY KEY,
-    item_name VARCHAR(32)
-);

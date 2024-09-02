@@ -1,5 +1,2 @@
-db/*
-!db/db.seed
-!db/seedData.ts
-!db/setupDb.ts
+db/
 node_modules/

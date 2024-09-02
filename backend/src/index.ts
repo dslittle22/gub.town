@@ -1,9 +1,30 @@
-import { ApolloServer } from "@apollo/server";
+import { ApolloServer, ApolloServerPlugin } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import setupDb from "./db/setupDb.js";
 import seedDb from "./db/seedData.js";
-import { Book, BookEntry, Query, User } from "./types.js";
+import { BookEntry, Query, User } from "./types.js";
 import { randomInt } from "crypto";
+
+const loggingPlugin: ApolloServerPlugin = {
+  // Fires whenever a GraphQL request is received from a client.
+  async requestDidStart(requestContext) {
+    // console.log("Request started! Query:\n" + requestContext.request.query);
+    console.log("Request started!");
+
+    // return {
+    // Fires whenever Apollo Server will parse a GraphQL
+    // request to create its associated document AST.
+    // async parsingDidStart(requestContext) {
+    // console.log("Parsing started!");
+    // },
+    // Fires whenever Apollo Server will validate a
+    // request's document AST against your GraphQL schema.
+    // async validationDidStart(requestContext) {
+    //   console.log("Validation started!");
+    // },
+    // };
+  },
+};
 
 const typeDefs = `#graphql
   # This "Book" type defines the queryable fields for every book in our data source.
@@ -21,6 +42,7 @@ const typeDefs = `#graphql
     lastName: String!
     email: String!
     isAdmin: Int!
+    bookEntries: [BookEntry]!
   }
 
   type BookEntry {
@@ -54,24 +76,22 @@ const resolvers = {
     foo: () => [{ foo: randomInt(0, 100).toString() }],
     books: () => db.prepare("SELECT * FROM books").all(),
     users: () => db.prepare("SELECT * FROM users").all(),
-    // bookEntries: () => {
-    //   const bookEntries = db
-    //     .prepare("SELECT * FROM book_entries")
-    //     .all() as any as Query<BookEntry>[];
-
-    //   const result: (BookEntry & { book: Book; user: User })[] = [];
-    //   for (const bookEntry of bookEntries) {
-    //     const book = db
-    //       .prepare("SELECT * FROM books WHERE id = ?")
-    //       .get(bookEntry.bookId) as any as Book;
-    //     const user = db
-    //       .prepare("SELECT * FROM users WHERE id = ?")
-    //       .get(bookEntry.userId) as any as User;
-    //     result.push({ ...bookEntry, book, user });
-    //   }
-
-    //   return result;
-    // },
+    bookEntries: () => db.prepare("SELECT * FROM book_entries").all(),
+  },
+  BookEntry: {
+    book(parent: Query<BookEntry>) {
+      return db.prepare("SELECT * FROM books WHERE id = ?").get(parent.bookId);
+    },
+    user(parent: Query<BookEntry>) {
+      return db.prepare("SELECT * FROM users WHERE id = ?").get(parent.userId);
+    },
+  },
+  User: {
+    bookEntries(parent: Query<User>) {
+      return db
+        .prepare("SELECT * FROM book_entries WHERE userId = ?")
+        .all(parent.id);
+    },
   },
 };
 
@@ -80,6 +100,7 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  plugins: [loggingPlugin],
 });
 
 // Passing an ApolloServer instance to the `startStandaloneServer` function:
