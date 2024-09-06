@@ -1,63 +1,45 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
+import type { User } from "./types";
 
-const FOO_DATA_QUERY = gql`
-  query AcquireFooData {
-    foo {
-      foo
+const USERS_FRAGMENT = gql`
+  fragment UserParts on User {
+    firstName
+    lastName
+    email
+    isAdmin
+    timestamp
+  }
+`;
+
+const USERS_QUERY = gql`
+  ${USERS_FRAGMENT}
+  query UsersQuery {
+    users {
+      ...UserParts
     }
   }
 `;
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  const [runQuery, { loading, error, data }] = useLazyQuery(FOO_DATA_QUERY, {
+  const { loading, error, data } = useQuery<{ users: User[] }>(USERS_QUERY, {
     fetchPolicy: "no-cache",
   });
 
-  useEffect(() => {
-    if (count >= 3) {
-      runQuery();
-    }
-  }, [count, runQuery]);
+  if (loading || !data) return <span>loading...</span>;
+  if (error) return <span>:(</span>;
 
-  console.log({ loading, error, data });
+  const { users } = data;
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + Apollo</h1>
-      <div className="card">
-        <button onClick={() => setCount(count + 1)}>count is {count}</button>
-        {loading && <p>Loading...</p>}
-        {error && <p>Error :(</p>}
-        {data && (
-          <>
-            <p>Random number is {Number(data.foo[0].foo)}</p>
-            <p>Sum is {Number(data.foo[0].foo) + count}</p>
-          </>
-        )}
-        {/* {data && <p>Sum is {data + count}</p>} */}
-
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <table>
+      {users.map((user) => (
+        <tr>
+          <td>{user.firstName}</td>
+          <td>{user.lastName}</td>
+          <td>{user.email}</td>
+        </tr>
+      ))}
+    </table>
   );
 }
 

@@ -52,20 +52,15 @@ const typeDefs = `#graphql
     user: User!
   }
 
-  type Foo {
-    foo: String!
-  }
 
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
-    foo: [Foo]!
     books: [Book]!
     users: [User]!
     bookEntries: [BookEntry]
   }
-
 `;
 
 const db = setupDb();
@@ -73,7 +68,6 @@ seedDb(db);
 
 const resolvers = {
   Query: {
-    foo: () => [{ foo: randomInt(0, 100).toString() }],
     books: () => db.prepare("SELECT * FROM books").all(),
     users: () => db.prepare("SELECT * FROM users").all(),
     bookEntries: () => db.prepare("SELECT * FROM book_entries").all(),
