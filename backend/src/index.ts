@@ -59,6 +59,7 @@ const typeDefs = `#graphql
   type Query {
     books: [Book]!
     users: [User]!
+    user(id: String): User
     bookEntries: [BookEntry]
   }
 `;
@@ -69,6 +70,7 @@ seedDb(db);
 const resolvers = {
   Query: {
     books: () => db.prepare("SELECT * FROM books").all(),
+    user: (_, { id }) => db.prepare("SELECT * FROM users where id = ?").get(id),
     users: () => db.prepare("SELECT * FROM users").all(),
     bookEntries: () => db.prepare("SELECT * FROM book_entries").all(),
   },
