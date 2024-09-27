@@ -24,3 +24,9 @@ table {
 .mb-4 {
   margin-bottom: 1em;
 }
+
+.input-wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}

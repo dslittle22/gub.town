@@ -2,15 +2,14 @@ import { ApolloServer, ApolloServerPlugin } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import setupDb from "./db/setupDb.js";
 import seedDb from "./db/seedData.js";
-import { BookEntry, Query, User } from "./types.js";
+import { Book, BookEntry, Query, User } from "./types.js";
 import { randomInt } from "crypto";
 
 const loggingPlugin: ApolloServerPlugin = {
   // Fires whenever a GraphQL request is received from a client.
   async requestDidStart(requestContext) {
     // console.log("Request started! Query:\n" + requestContext.request.query);
-    console.log("Request started!");
-
+    // console.log("Request started!");
     // return {
     // Fires whenever Apollo Server will parse a GraphQL
     // request to create its associated document AST.
@@ -62,6 +61,10 @@ const typeDefs = `#graphql
     user(id: String): User
     bookEntries: [BookEntry]
   }
+
+  type Mutation {
+    addBook(title: String!, author: String!, userId: String!): BookEntry
+  }
 `;
 
 const db = setupDb();
@@ -87,6 +90,28 @@ const resolvers = {
       return db
         .prepare("SELECT * FROM book_entries WHERE userId = ?")
         .all(parent.id);
+    },
+  },
+  Mutation: {
+    addBook: (_, { title, author, userId }) => {
+      const { lastInsertRowid } = db
+        .prepare(
+          `INSERT INTO books(title, author)
+       VALUES (@title, @author)`
+        )
+        .run({ title, author });
+
+      db.prepare(
+        `INSERT INTO book_entries(userId, bookId)
+           VALUES (@userId, @bookId)`
+      ).run({
+        userId,
+        bookId: lastInsertRowid,
+      });
+
+      return db
+        .prepare("SELECT * FROM book_entries WHERE id = last_insert_rowid()")
+        .get() as Query<BookEntry>;
     },
   },
 };

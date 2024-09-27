@@ -5,8 +5,8 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorNotFound from "./error-notfound.tsx";
-import UserDetailPage from "./UserDetailPage.tsx";
-import UserListPage from "./UserListPage.tsx";
+import UserDetailPage from "./Components/UserDetailPage.tsx";
+import UserListPage from "./Components/UserListPage.tsx";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000",

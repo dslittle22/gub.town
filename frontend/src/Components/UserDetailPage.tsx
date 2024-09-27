@@ -1,35 +1,37 @@
 import { gql, useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
-import { Query, User } from "./types";
+import { BookEntry, Query, User } from "../types";
 import { Temporal } from "@js-temporal/polyfill";
+import BookForm from "./BookForm";
+
+export const GET_USER_AND_BOOK_ENTRIES = gql`
+  query GetUserAndBookEntries($id: String) {
+    user(id: $id) {
+      id
+      firstName
+      lastName
+      bookEntries {
+        id
+        timestamp
+        book {
+          title
+          author
+        }
+      }
+    }
+  }
+`;
 
 const UserDetailPage = () => {
   const params = useParams();
 
-  const { loading, error, data } = useQuery<{ user: Query<User> | null }>(
-    gql`
-      query ExampleQuery($id: String) {
-        user(id: $id) {
-          id
-          firstName
-          lastName
-          bookEntries {
-            id
-            timestamp
-            book {
-              title
-              author
-            }
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        id: params.userId,
-      },
-    }
-  );
+  const { loading, error, data } = useQuery<{
+    user: (Query<User> & { bookEntries: Query<BookEntry>[] }) | null;
+  }>(GET_USER_AND_BOOK_ENTRIES, {
+    variables: {
+      id: params.userId,
+    },
+  });
 
   if (error) return <span>:(</span>;
   if (loading || !data) return <span>loading...</span>;
@@ -48,6 +50,7 @@ const UserDetailPage = () => {
         {user.firstName} {user.lastName}
       </h2>
       <ol>
+        {/* @ts-expect-error ignore this */}
         {user.bookEntries.map(({ id, book, timestamp }) => {
           const zonedDateTime = Temporal.ZonedDateTime.from(
             timestamp + "[UTC]"
@@ -65,6 +68,7 @@ const UserDetailPage = () => {
           );
         })}
       </ol>
+      <BookForm />
     </>
   );
 };
