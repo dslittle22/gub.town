@@ -2,7 +2,8 @@ import { useMutation } from "@apollo/client";
 import React, { forwardRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { CREATE_BOOK_ENTRY, GET_USER_AND_BOOK_ENTRIES } from "./../queries";
+import { GET_USER_AND_BOOK_ENTRIES } from "./../queries";
+import { CREATE_BOOK_ENTRY } from "../mutations";
 
 type Inputs = {
   title: string;
