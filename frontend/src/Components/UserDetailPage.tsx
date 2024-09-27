@@ -1,26 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
 import { BookEntry, Query, User } from "../types";
 import { Temporal } from "@js-temporal/polyfill";
 import BookForm from "./BookForm";
-
-export const GET_USER_AND_BOOK_ENTRIES = gql`
-  query GetUserAndBookEntries($id: String) {
-    user(id: $id) {
-      id
-      firstName
-      lastName
-      bookEntries {
-        id
-        timestamp
-        book {
-          title
-          author
-        }
-      }
-    }
-  }
-`;
+import { GET_USER_AND_BOOK_ENTRIES } from "../queries";
 
 const UserDetailPage = () => {
   const params = useParams();

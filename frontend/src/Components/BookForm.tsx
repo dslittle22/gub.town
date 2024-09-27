@@ -1,39 +1,21 @@
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import React, { forwardRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { GET_USER_AND_BOOK_ENTRIES } from "./UserDetailPage";
+import { CREATE_BOOK_ENTRY, GET_USER_AND_BOOK_ENTRIES } from "./../queries";
 
 type Inputs = {
   title: string;
   author: string;
 };
 
-const CREATE_BOOK_ENTRY = gql`
-  mutation CreateBookEntry(
-    $title: String!
-    $author: String!
-    $userId: String!
-  ) {
-    addBook(title: $title, author: $author, userId: $userId) {
-      book {
-        id
-      }
-    }
-  }
-`;
-
-const Input = forwardRef(function (
+const Input = forwardRef<
+  HTMLInputElement,
   {
-    label,
-    errorState,
-    ...props
-  }: {
     label: React.ReactNode;
     errorState: React.ReactNode;
-  },
-  ref
-) {
+  } & React.InputHTMLAttributes<HTMLInputElement>
+>(function ({ label, errorState, ...props }, ref) {
   return (
     <div className="input-wrapper">
       {label}
@@ -53,9 +35,6 @@ export default function BookForm() {
 
   const onSubmit: SubmitHandler<Inputs> = (data) =>
     bookMutation({ variables: { ...data, userId } });
-
-  // console.log(watch("book"));
-  // console.log({ formState });
 
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
