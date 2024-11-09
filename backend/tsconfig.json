@@ -8,6 +8,8 @@
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "types": ["node"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
   }
 }
