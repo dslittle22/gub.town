@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node ./build.js --dev",
-    "start": "npm run start:build && npm run start:run",
-    "run": "node dist/out.js",
-    "build": "time node ./build.js"
+    "codegen": "graphql-codegen --config codegen.ts --trace-deprecation",
+    "build": "time (npm run codegen && node ./build.js)",
+    "start": "npm run build && node dist/out.js",
+    "dev": "npm run codegen && node ./build.js --dev"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +14,17 @@
   "description": "",
   "devDependencies": {
     "@es-exec/esbuild-plugin-serve": "^0.0.5",
+    "@graphql-codegen/cli": "5.0.3",
+    "@graphql-codegen/typescript": "4.1.1",
+    "@graphql-codegen/typescript-resolvers": "4.4.0",
     "@luckycatfactory/esbuild-graphql-loader": "^3.8.1",
     "@types/node": "^20.14.4",
     "esbuild": "^0.24.0",
     "graphql": "^16.9.0",
     "graphql-tag": "^2.12.6",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@graphql-codegen/typescript-document-nodes": "4.0.11",
+    "@graphql-codegen/introspection": "4.0.3"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
