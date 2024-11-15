@@ -5,11 +5,6 @@ import seedDb from "./db/seedData.js";
 import { BookEntry, Query, User } from "./types.js";
 import typeDefs from "./schema/schema.graphql";
 
-// import { readFileSync } from "fs";
-
-// const typeDefs = readFileSync("./src/schema/schema.graphql", {
-//   encoding: "utf-8",
-// });
 
 const loggingPlugin: ApolloServerPlugin = {
   // Fires whenever a GraphQL request is received from a client.
