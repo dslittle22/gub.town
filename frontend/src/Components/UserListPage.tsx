@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Query, User } from "./types";
+import { Query, User } from "../types";
 import { Link } from "react-router-dom";
 
 const USERS_FRAGMENT = gql`
@@ -42,7 +42,7 @@ const UserListPage = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {users.map((user) => (
             <tr key={user.id}>
               <td>
                 <Link to={`/user/${user.id}`}>{user.firstName}</Link>

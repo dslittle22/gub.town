@@ -2,9 +2,9 @@ import { ApolloServer, ApolloServerPlugin } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import setupDb from "./db/setupDb.js";
 import seedDb from "./db/seedData.js";
-import { Book as BookType, BookEntry, Query, User } from "./types.js";
-import { randomInt } from "crypto";
-import Book from "./models/book.gql";
+import { BookEntry, Query, User } from "./types.js";
+import typeDefs from "./schema/schema.graphql";
+
 
 const loggingPlugin: ApolloServerPlugin = {
   // Fires whenever a GraphQL request is received from a client.
@@ -78,7 +78,7 @@ const resolvers = {
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
 const server = new ApolloServer({
-  typeDefs: [Book],
+  typeDefs,
   resolvers,
   plugins: [loggingPlugin],
 });
