@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node ./build.js --dev",
-    "start": "npm run start:build && npm run start:run",
+    "start": "npm run build && npm run run",
     "run": "node dist/out.js",
     "build": "time node ./build.js"
   },
