@@ -1,19 +1,28 @@
-version: "3.8"
-
 services:
   backend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=4000"
+    networks:
+      - traefik_network
+
   frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    networks:
+      - traefik_network
+
   reverse-proxy:
     image: traefik:v3.1
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker"
-    ports:
-      - 80:80
-      # Traefik web UI
-      - 8080:8080
-      # Our backend service's port - unclear if needed
-      - 4000:4000
     volumes:
-      # So that Traefik can listen to docker events
       - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+    networks:
+      - traefik_network
+
+volumes:
+  letsencrypt:
+
+networks:
+  traefik_network:

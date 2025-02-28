@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    labels:
+      - "traefik.http.routers.backend.rule=Host(`localhost`)"
+      - "traefik.http.routers.backend.entrypoints=appsecure"
+    environment:
+      - NODE_ENV=development
+      - DEBUG=true
+
+  frontend:
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+    environment:
+      - NODE_ENV=development
+
+  reverse-proxy:
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:80"
+      - "--entrypoints.appsecure.address=:4000"
+    ports:
+      - 80:80
+      - 4000:4000
+      - 8080:8080  # Traefik dashboard for dev
