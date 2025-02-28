@@ -1,19 +1,64 @@
-version: "3.8"
-
 services:
   backend:
+    # TODO: pull from gchr in prod
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`localhost`)"
+      - "traefik.http.routers.backend.entrypoints=appsecure"
+      # - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=4000"
+    deploy:
+      mode: replicated
+      replicas: 3
+    networks:
+      - traefik_network
+
   frontend:
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      # - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80" # 443
+    deploy:
+      mode: replicated
+      replicas: 3
+    networks:
+      - traefik_network
+
   reverse-proxy:
     image: traefik:v3.1
     command:
       - "--api.insecure=true"
       - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:80" # 443
+      - "--entrypoints.appsecure.address=:4000"
+      # - "--entrypoints.web.address=:80"
+      # - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      # - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # - "--certificatesresolvers.myresolver.acme.tlschallenge=false"
+      # - "--certificatesresolvers.myresolver.acme.email=littleguy23@gmail.com"
+      # - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
+      - 443:443
       - 80:80
-      # Traefik web UI
+      - 4000:4000 
       - 8080:8080
-      # Our backend service's port - unclear if needed
-      - 4000:4000
     volumes:
-      # So that Traefik can listen to docker events
       - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+    networks:
+      - traefik_network
+
+volumes:
+  letsencrypt:
+
+networks:
+  traefik_network:
