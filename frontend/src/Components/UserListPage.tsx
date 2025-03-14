@@ -1,6 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { Query, User } from "../types";
 import { Link } from "react-router-dom";
+import BookForm from "./BookForm";
 
 const USERS_FRAGMENT = gql`
   fragment UserParts on User {
@@ -33,6 +34,7 @@ const UserListPage = () => {
 
   return (
     <>
+      <h1>Wokka wokka wokka</h1>
       <table>
         <thead>
           <tr>
@@ -53,6 +55,7 @@ const UserListPage = () => {
           ))}
         </tbody>
       </table>
+      <BookForm />
     </>
   );
 };
